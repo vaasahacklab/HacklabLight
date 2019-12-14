@@ -74,6 +74,10 @@ void sendStatus(String status) {
          url += room;
          url += "/send/m.room.message";
 
+  Serial.println("[HTTP]: Trying URL: ");
+  Serial.print("  ");
+  Serial.println(url);
+  
   matrix.begin(*client, url);
   matrix.addHeader("Content-Type", "application/json");
   matrix.addHeader("Authorization", "Bearer " + String(accessToken));
@@ -83,9 +87,6 @@ void sendStatus(String status) {
   if(httpCode > 0) { // httpCode will be negative on error
     if(httpCode == HTTP_CODE_OK) {
       String payload = matrix.getString();
-      Serial.println("[HTTP]: Trying URL: ");
-      Serial.print("  ");
-      Serial.println(url);
       Serial.printf("[HTTP]: OK, code: %d\n", httpCode);
       Serial.println("[HTTP]: Response: " + payload);
     } else {
