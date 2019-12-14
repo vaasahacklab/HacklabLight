@@ -43,7 +43,7 @@ void connectToWifi() {
 
   WiFi.begin(ssid, pass);
 
-  // Wait for connection
+  // Wait for connection, print '.' every 500ms until connected
   Serial.print("[NETWORK]: ");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -74,9 +74,14 @@ void sendStatus(String status) {
          url += room;
          url += "/send/m.room.message";
 
-  Serial.println("[HTTP]: Trying URL: ");
-  Serial.print("  ");
-  Serial.println(url);
+  #ifdef DEBUG
+    Serial.println("[DEBUG]: [HTTP]: Trying URL: ");
+    Serial.print("  ");
+    Serial.println(url);
+    Serial.println("[DEBUG]: [HTTP]: With message content:");
+    Serial.print("  ");
+    Serial.println(messageContent);
+  #endif
   
   matrix.begin(*client, url);
   matrix.addHeader("Content-Type", "application/json");
@@ -85,10 +90,14 @@ void sendStatus(String status) {
   int httpCode = matrix.POST(messageContent);
 
   if(httpCode > 0) { // httpCode will be negative on error
-    if(httpCode == HTTP_CODE_OK) {
-      String payload = matrix.getString();
+    if(httpCode == HTTP_CODE_OK) {      
       Serial.printf("[HTTP]: OK, code: %d\n", httpCode);
-      Serial.println("[HTTP]: Response: " + payload);
+
+      #ifdef DEBUG
+        String payload = matrix.getString();
+        Serial.println("[DEBUG]: [HTTP]: Response: " + payload);
+      #endif
+      
     } else {
       Serial.printf("[HTTP]: error, code: %d\n", httpCode);
     }

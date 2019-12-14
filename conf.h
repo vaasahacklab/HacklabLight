@@ -1,6 +1,8 @@
 #ifndef LIGHTCONF_H
 #define LIGHTCONF_H
 
+//#define DEBUG // Uncomment this to see debug data on serial port
+
 const char* ssid = "WifiName";
 const char* pass = "TotallySecret";
 
