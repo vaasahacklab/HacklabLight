@@ -10,22 +10,27 @@
  */
 
 #include "LightStatusHandler.h"
+#include "Logger.h"
 #include "conf.h"
 
 LightStatusHandler lightStatusHandler(minOn, maxOff);
+Logger *logger = new Logger();
+
 unsigned long lastMillis = 0;
 
 void setup() {
-  Serial.begin(115200);
   pinMode(LDR_PIN, INPUT);
-  
+
+  Serial.begin(baudRate);
+  logger->init(logLevel, &Serial);
+
   connectToWifi();
 }
 
 void loop() {
   if (millis() - lastMillis > loopInterval) {
     lastMillis = millis();
-    if(WiFi.status() != WL_CONNECTED) {
+    if (WiFi.status() != WL_CONNECTED) {
       connectToWifi();
     }
 
@@ -38,27 +43,20 @@ void loop() {
 }
 
 void connectToWifi() {
-  Serial.println("");
-  Serial.print("[NETWORK]: Connecting to ");
-  Serial.println(ssid);
-
   WiFi.begin(ssid, pass);
 
   // Wait for connection, print '.' every 500ms until connected
-  Serial.print("[NETWORK]: ");
+  logger->debug("[NETWORK]: Connecting");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    Serial.print(".");
+    logger->debug(".");
   }
 
-  Serial.println("");
-  Serial.print("[NETWORK]: IP address: ");
-  Serial.println(WiFi.localIP());
+  logger->info("[NETWORK]: IP address: " + WiFi.localIP().toString());
 }
 
 void sendStatus(String status) {
-  Serial.print("[HTTP]: Sending message: ");
-  Serial.println(status);
+  logger->info("[HTTP]: Sending message: " + status);
 
   String messageContent  = "{\"msgtype\":\"m.notice\", \"body\":\"";
          messageContent += status;
@@ -75,14 +73,8 @@ void sendStatus(String status) {
          url += room;
          url += "/send/m.room.message";
 
-  #ifdef DEBUG
-    Serial.println("[DEBUG]: [HTTP]: Trying URL: ");
-    Serial.print("  ");
-    Serial.println(url);
-    Serial.println("[DEBUG]: [HTTP]: With message content:");
-    Serial.print("  ");
-    Serial.println(messageContent);
-  #endif
+  logger->debug("[HTTP]: Trying URL: " + url);
+  logger->debug("[HTTP]: With message content:" + messageContent);
   
   matrix.begin(*client, url);
   matrix.addHeader("Content-Type", "application/json");
@@ -92,18 +84,14 @@ void sendStatus(String status) {
 
   if(httpCode > 0) { // httpCode will be negative on error
     if(httpCode == HTTP_CODE_OK) {      
-      Serial.printf("[HTTP]: OK, code: %d\n", httpCode);
-
-      #ifdef DEBUG
-        String payload = matrix.getString();
-        Serial.println("[DEBUG]: [HTTP]: Response: " + payload);
-      #endif
-      
+      logger->info("[HTTP]: OK, code: " + httpCode);
+      logger->debug("[HTTP]: Response: " + matrix.getString());
     } else {
-      Serial.printf("[HTTP]: error, code: %d\n", httpCode);
+      logger->error("[HTTP]: error, code: " + httpCode);
     }
   } else {
-    Serial.printf("[HTTP]: POST failed, error: %s\n", matrix.errorToString(httpCode).c_str());
+    String error = matrix.errorToString(httpCode).c_str();
+    logger->error("[HTTP]: POST failed, error: " + error);
   }
   matrix.end();
 }

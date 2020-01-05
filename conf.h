@@ -1,7 +1,7 @@
 #ifndef LIGHTCONF_H
 #define LIGHTCONF_H
 
-//#define DEBUG // Uncomment this to see debug data on serial port
+#include "globals.h"
 
 const char* ssid = "WifiName";
 const char* pass = "TotallySecret";
@@ -19,5 +19,8 @@ const int minOn = 950;
 const int maxOff = 700;
 
 const unsigned int loopInterval = 5*1000;
+
+const LogLevel logLevel = LogLevel::Info;
+const int baudRate = 115200;
 
 #endif
