@@ -13,6 +13,7 @@
 #include "conf.h"
 
 LightStatusHandler lightStatusHandler(minOn, maxOff);
+unsigned long lastMillis = 0;
 
 void setup() {
   Serial.begin(115200);

@@ -18,7 +18,6 @@ const int minOn = 950;
 // maximum sensor reading when lights are considered OFF
 const int maxOff = 700;
 
-unsigned long lastMillis = 0;
-unsigned int loopInterval = 5*1000;
+const unsigned int loopInterval = 5*1000;
 
 #endif
