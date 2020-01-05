@@ -9,12 +9,14 @@
  *  ESP8266 Witty: http://www.schatenseite.de/en/2016/04/22/esp8266-witty-cloud-module/
  */
 
+#include "conf.h"
+#include "ArduinoOtaHandler.h"
 #include "LightStatusHandler.h"
 #include "Logger.h"
-#include "conf.h"
 
 LightStatusHandler lightStatusHandler(minOn, maxOff);
 Logger *logger = new Logger();
+ArduinoOtaHandler *otaHandler = new ArduinoOtaHandler();
 
 unsigned long lastMillis = 0;
 
@@ -25,6 +27,8 @@ void setup() {
   logger->init(logLevel, &Serial);
 
   connectToWifi();
+
+  otaHandler->setup(logger, otaPort, otaHostname, otaPassword);
 }
 
 void loop() {
@@ -34,11 +38,16 @@ void loop() {
       connectToWifi();
     }
 
-    int lights = analogRead(LDR_PIN);
+    handleLightStatus();
+    otaHandler->handle();
+  }
+}
 
-    if (lightStatusHandler.hasChanged(lights)) {
-      sendStatus(lightStatusHandler.statusToString());
-    }
+void handleLightStatus() {
+  int lights = analogRead(LDR_PIN);
+
+  if (lightStatusHandler.hasChanged(lights)) {
+    sendStatus(lightStatusHandler.statusToString());
   }
 }
 

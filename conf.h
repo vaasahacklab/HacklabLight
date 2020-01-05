@@ -23,4 +23,8 @@ const unsigned int loopInterval = 5*1000;
 const LogLevel logLevel = LogLevel::Info;
 const int baudRate = 115200;
 
+const int otaPort = 8266;
+const char* otaHostname = "publichostname";
+const char* otaPassword = "secretpassword";
+
 #endif
