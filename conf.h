@@ -1,7 +1,7 @@
 #ifndef LIGHTCONF_H
 #define LIGHTCONF_H
 
-//#define DEBUG // Uncomment this to see debug data on serial port
+#include "globals.h"
 
 const char* ssid = "WifiName";
 const char* pass = "TotallySecret";
@@ -18,7 +18,13 @@ const int minOn = 950;
 // maximum sensor reading when lights are considered OFF
 const int maxOff = 700;
 
-unsigned long lastMillis = 0;
-unsigned int loopInterval = 5*1000;
+const unsigned int loopInterval = 5*1000;
+
+const LogLevel logLevel = LogLevel::Info;
+const int baudRate = 115200;
+
+const int otaPort = 8266;
+const char* otaHostname = "publichostname";
+const char* otaPassword = "secretpassword";
 
 #endif

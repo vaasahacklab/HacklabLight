@@ -26,22 +26,16 @@ String LightStatusHandler::statusToString() {
     String state;
     String pastState;
 
+    String message;
     if (_lightStatus) {
-        state = "ON";
-        pastState = "dark";
+        message = "Lights are ON. It was dark for ";
     }
     else {
-        state = "OFF";
-        pastState = "light";
+        message = "Lights are OFF. It was light for ";
     }
+    
+    message += _timer->getLastTime();
+    message += ".";
 
-    String str = "Lights are ";
-    str += state;
-    str += ". It was ";
-    str += pastState;
-    str += " for ";
-    str += _timer->getLastTime();
-    str += ".";
-
-    return str;
+    return message;
 }
