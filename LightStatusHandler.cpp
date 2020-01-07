@@ -23,9 +23,6 @@ bool LightStatusHandler::hasChanged(int reading) {
 }
 
 String LightStatusHandler::statusToString() {
-    String state;
-    String pastState;
-
     String message;
     if (_lightStatus) {
         message = "Lights are ON. It was dark for ";
